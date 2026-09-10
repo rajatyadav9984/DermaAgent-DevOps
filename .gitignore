@@ -29,3 +29,10 @@ __pycache__/
 # OS
 .DS_Store
 Thumbs.db
+
+# Large ML dataset
+dataset_real/
+
+# Large trained model files
+model/*.pth
+

@@ -1,0 +1,48 @@
+name: DermaAgent CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+        continue-on-error: true
+
+      - name: Log in to Azure Container Registry (ACR)
+        uses: azure/docker-login@v1
+        with:
+          login-server: acrdermaagentdev.azurecr.io
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/Dockerfile
+          push: true
+          tags: |
+            acrdermaagentdev.azurecr.io/dermaagent:latest
+            acrdermaagentdev.azurecr.io/dermaagent:${{ github.sha }}
+
+      - name: Deploy to Azure Container Apps
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          appSourcePath: ${{ github.workspace }}
+          acrName: acrdermaagentdev
+          containerAppName: ca-dermaagent-dev
+          resourceGroup: rg-dermaagent-dev
+          imageToDeploy: acrdermaagentdev.azurecr.io/dermaagent:${{ github.sha }}
+        continue-on-error: true
