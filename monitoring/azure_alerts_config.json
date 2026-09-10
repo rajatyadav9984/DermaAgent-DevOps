@@ -1,0 +1,28 @@
+{
+  "monitoring": {
+    "appName": "ca-dermaagent-dev",
+    "resourceGroup": "rg-dermaagent-dev",
+    "healthEndpoint": "https://ca-dermaagent-dev.ashyground-d796bf8e.eastus.azurecontainerapps.io/api/health",
+    "metrics": [
+      {
+        "name": "CpuPercentage",
+        "threshold": 80,
+        "operator": "GreaterThan",
+        "timeAggregation": "Average"
+      },
+      {
+        "name": "MemoryPercentage",
+        "threshold": 85,
+        "operator": "GreaterThan",
+        "timeAggregation": "Average"
+      },
+      {
+        "name": "Http5xxServerErrorCount",
+        "threshold": 5,
+        "operator": "GreaterThan",
+        "timeAggregation": "Total"
+      }
+    ],
+    "healthCheckFrequencySeconds": 60
+  }
+}
